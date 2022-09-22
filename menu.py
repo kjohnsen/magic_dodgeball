@@ -1,22 +1,27 @@
 import pygame
 from pygame import Rect
-from scenemgr import Scene
+from pygame.locals import MOUSEBUTTONDOWN
+from attrs import define, field, Factory
 
-class Button():
-  def __init__(self, rect, c='gray'):
-    self.rect = rect
-    self.c = c
-    
-  def draw(self):
-    pygame.draw.rect(self.screen, self.c, self.rect)
+from game import Game, Scene
+from gameobj import GameObject, NeedsCleanup
+from button import Button
+from utils import relrect
+from match import Match
 
+
+# @define
 class Menu(Scene):
-      
-  bg = (100, 100, 100)
-  
-  def init(self):
-    self.add_child(StartButton)
-    pass
-  
-  def draw_scene(self):
-    self.screen.fill(self.bg)
+    start: Button
+
+    def init(self, *args, **kwargs):
+        def on_start_click():
+            self.game.change_scene(Match)
+
+        self.start = Button(
+            relrect(self.surf, 0.5, 0.5, 0.5, 0.2), "START", on_start_click
+        )
+
+    def draw_bg(self):
+        self.surf.fill((31, 1, 52))
+        self.start.draw(self.surf)

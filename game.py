@@ -1,28 +1,54 @@
-from gameobj import GameObject
+from attrs import define, field, Factory
 
-class Game(GameObject):
-  def __init__(self, screen, start_scene):
-    self.screen = screen
-    self.current = start_scene(screen, self)
-    self.event_handlers = {}
-
-  def change_scene(self, scene_type):
-    self.current = scene_type(self.sreen, self)
+from gameobj import GameObject, NeedsCleanup
 
 
+# @define
+class Game():
+    scene = None
 
-class Scene(GameObject): 
-  def __init__(self, screen, sm: Game, *args, **kwargs):
-    self.screen = screen
-    self.scene_mgr = sm
-    self.children = []
-    self.init(*args, **kwargs)
+    def __init__(self, surf, start_scene):
+        self.surf = surf
+        self.scene = start_scene(surf, self)
 
-  
-  def process_event(self, event):
-    self.process_event_scene(event)
-    for c in self.children:
-      c.process_event(event)
+    def change_scene(self, scene_type):
+        prev = self.scene
+        self.scene = scene_type(self.surf, self)
+        prev.cleanup()
+        del prev
 
-  def process_event_scene(self, event):
-    pass
+
+class Scene():
+    def __init__(self, surf, game: Game, *args, **kwargs):
+        self.surf = surf
+        self.game = game
+        self.groups = []
+        self.init(*args, **kwargs)
+    
+    def init(self, *args, **kwargs):
+        pass
+
+    def draw(self):
+        self.draw_bg()
+        for g in self.groups:
+            g.draw()
+
+    def draw_bg(self):
+        pass
+
+    def update(self):
+        self.update_self()
+        for g in self.groups:
+            g.update()
+
+    def update_self(self):
+        pass
+
+    def cleanup(self):
+        self.cleanup_self()
+        for child in vars(self).values():
+            if isinstance(child, NeedsCleanup):
+                child.cleanup()
+
+    def cleanup_self(self):
+        pass
