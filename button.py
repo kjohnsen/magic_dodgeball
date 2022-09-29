@@ -24,7 +24,7 @@ class Button(NeedsCleanup):
         def click_handler(event):
             assert event.type == MOUSEBUTTONDOWN
             if self.rect.collidepoint(pygame.mouse.get_pos()):
-                print('clicked button')
+                print(f'clicked button {self.text}')
                 self.onclick()
         self.cleanups.append(register_event_handler(MOUSEBUTTONDOWN, self, click_handler))
 

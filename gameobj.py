@@ -43,3 +43,4 @@ class NeedsCleanup:
     def cleanup(self):
         for cu in self.cleanups:
             cu()
+        self._cleanups = []

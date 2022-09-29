@@ -1,22 +1,22 @@
 import pygame
 from pygame.locals import MOUSEBUTTONDOWN
 
-from game import Game, Scene
+from scene import Scene
+from gvars import DARKPURPLE
 from utils import relrect
 from eventhandler import EventHandler
 from player import Player
-from kyle import Kyle
 
 class Match(Scene):
-    def init(self, *args, **kwargs):
+    def init(self, pleft, pright, *args, **kwargs):
         self.midline = relrect(self.surf, .5, .5, .01, 1)
-        self.pleft = Kyle('left')
-        self.pright = Kyle('right')
+        self.pleft = pleft('left')
+        self.pright = pright('right')
         self.things.extend(self.pleft)
         self.things.extend(self.pright)
         
     def draw_bg(self):
-        self.surf.fill((31, 1, 52))
+        self.surf.fill(DARKPURPLE)
         pygame.draw.rect(self.surf, 'white', self.midline)
 
     def update_self(self):
@@ -28,3 +28,12 @@ class Match(Scene):
                     continue
                 b.active = False
                 bcoll.active = False
+        for (p1, p2) in [(self.pleft, self.pright), (self.pright, self.pleft)]:
+            icoll = p1.rect.collidelist(p2.active_balls)
+            if icoll != -1:
+                p1.hit()
+                p2.active_balls[icoll].active = False
+                if p1.health.curr <= 0:
+                    self.game.change_scene('End', p2)
+
+        

@@ -97,6 +97,14 @@ class Player(Group, NeedsCleanup):
     def center(self):
         return self.psprite.rect.center
 
+    @property
+    def rect(self):
+        return self.psprite.rect
+
+    @property
+    def name(self):
+        return type(self).__name__
+
     def __init__(self, side) -> None:
         super().__init__()
         self.side = side
@@ -145,7 +153,7 @@ class Player(Group, NeedsCleanup):
                         return
                     ball = self.inactive_balls[0]
                     ball.rect.center = self.center
-                    ball.v = self.v
+                    ball.v = self.v.copy()
                     ball.start_traj(trajs[event.key], self.magic)
                     ball.active = True
 
@@ -167,6 +175,9 @@ class Player(Group, NeedsCleanup):
 
         self.cleanups.append(register_event_handler(KEYDOWN, self, handle_keydown))
         self.cleanups.append(register_event_handler(KEYUP, self, handle_keyup))
+
+    def hit(self):
+        self.health.curr -= 30
 
     def traj1(self, pos, v):
         return v
