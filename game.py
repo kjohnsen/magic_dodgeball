@@ -1,6 +1,7 @@
 from attrs import define, field, Factory
 
 from gameobj import GameObject, NeedsCleanup
+from gvars import SCREEN
 
 
 # @define
@@ -22,7 +23,7 @@ class Scene():
     def __init__(self, surf, game: Game, *args, **kwargs):
         self.surf = surf
         self.game = game
-        self.groups = []
+        self.things = []
         self.init(*args, **kwargs)
     
     def init(self, *args, **kwargs):
@@ -30,7 +31,7 @@ class Scene():
 
     def draw(self):
         self.draw_bg()
-        for g in self.groups:
+        for g in self.things:
             g.draw()
 
     def draw_bg(self):
@@ -38,7 +39,7 @@ class Scene():
 
     def update(self):
         self.update_self()
-        for g in self.groups:
+        for g in self.things:
             g.update()
 
     def update_self(self):
